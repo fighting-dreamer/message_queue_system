@@ -12,6 +12,7 @@ func Router(dependencies *appcontext.Instance) *mux.Router {
 
 	handlePublisherRoutes(dependencies, router)
 	handleSubscriberRoutes(dependencies, router)
+	handleQueueRoutes(dependencies, router)
 
 	return router
 }
