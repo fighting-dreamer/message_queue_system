@@ -16,6 +16,7 @@
 6. PublisherHandler
 7. SenderService
 8. SubscriberManager
+9. SubscriberHandler
 
 ## Other Aspects : 
 1. Logging
