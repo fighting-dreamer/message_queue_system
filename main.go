@@ -1,12 +1,11 @@
 package main
 
 import (
-	"fmt"
-
 	"nipun.io/message_queue/appcontext"
+	"nipun.io/message_queue/server"
 )
 
 func main() {
 	appcontext.Init()
-	fmt.Println("Hello World!!")
+	server.StartApiServer(appcontext.AppDependencies)
 }
