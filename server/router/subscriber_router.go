@@ -10,6 +10,8 @@ import (
 
 func handleSubscriberRoutes(dependencies *appcontext.Instance, router *mux.Router) {
 	subscriberHandler := handler.NewsubscriberHandler(dependencies)
-	router.HandleFunc("/v1/subscribe", subscriberHandler.PollMessageAPI).Methods(http.MethodPost)
+	router.HandleFunc("/v1/subscribe/poll", subscriberHandler.PollMessageAPI).Methods(http.MethodPost)
+
+	router.HandleFunc("/v1/subscribe/register", subscriberHandler.PollMessageAPI).Methods(http.MethodPost)
 
 }
