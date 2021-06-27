@@ -15,14 +15,6 @@ type CallBackWorker struct {
 	CallBackChan      chan *domain.Message
 }
 
-func Start(worker service.ICallBackWorker) {
-	logger.Logger.Debug().Msg("Started the Callback Worker")
-	for messageRef := range worker.GetCallBackChan() {
-		logger.Logger.Debug().Msgf("Got Message : %+v", *messageRef)
-		go worker.CallSubscribers(messageRef)
-	}
-}
-
 func (cw *CallBackWorker) CallSubscribers(message *domain.Message) error {
 	queueName := message.Metadata.QueueName
 	subscribers := cw.SubscriberManager.GetQueueSubscribers(queueName)
