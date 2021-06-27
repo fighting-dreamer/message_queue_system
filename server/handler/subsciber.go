@@ -50,5 +50,22 @@ func (sh *SubscriberHandler) RegisterSubscriberAPI(w http.ResponseWriter, r *htt
 
 func (sh *SubscriberHandler) PollMessageAPI(w http.ResponseWriter, r *http.Request) {
 	logger.Logger.Debug().Msg("Subscriber API called")
-	domain.WriteResponse(http.StatusOK, nil, w)
+	// Parse the request
+	bodyBytes, _ := io.ReadAll(r.Body)
+	subscriberPollRequest := domain.SubscriberPollRequest{}
+	err := getBody(r.Context(), bodyBytes, &subscriberPollRequest)
+	if err != nil {
+		domain.WriteErrorResponse(http.StatusBadRequest, []string{JsonParseError.Error()}, w)
+		return
+	}
+
+	messages, err := sh.SenderService.GetMessage(&subscriberPollRequest)
+	if err != nil {
+		domain.WriteErrorResponse(http.StatusInternalServerError, []string{err.Error()}, w)
+		return
+	}
+	response := domain.SubscriberPollResponse{
+		Messages: messages,
+	}
+	domain.WriteResponse(http.StatusOK, response, w)
 }

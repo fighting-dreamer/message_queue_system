@@ -108,7 +108,7 @@
    4. It calls MessageBroker.**SetMessage()** and return success OR exception.
    5. If the publish is successful then it raises an async operation on the MessageBroker.**CallSubscribers()**
    
-4. PollMessage
+-[x] PollMessage
    1. Subscriber calls SubscriberHandler.**PollMessageApi()**.
    2. It calls then SenderService.GetMessage()
    3. It checks the queue is valid. 

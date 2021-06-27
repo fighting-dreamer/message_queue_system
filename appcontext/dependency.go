@@ -34,7 +34,10 @@ func LoadDependencies() {
 }
 
 func addMessageStore(dependencies *Instance) {
-	dependencies.MessageStoreService = &local_service.MessageStoreService{}
+	dependencies.MessageStoreService = &local_service.MessageStoreService{
+		MessageIDMap:            map[int]domain.Message{},
+		QueueToMessageIDListMap: map[string][]int{},
+	}
 }
 
 func addQueueManager(dependencies *Instance) {

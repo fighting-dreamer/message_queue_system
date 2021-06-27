@@ -52,3 +52,7 @@ func (sm *SubscriberManager) RegisterSubscriber(request *domain.SubscriberRegist
 func (sm *SubscriberManager) GetQueueSubscribers(queueName string) []*domain.Subscriber {
 	return sm.QueueToSubscriberListMap[queueName]
 }
+
+func (sm *SubscriberManager) GetSubscriberQueueName(subscriberID string) string {
+	return sm.SubscriberToQueueMap[subscriberID]
+}
