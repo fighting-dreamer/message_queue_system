@@ -5,9 +5,11 @@ import (
 
 	"nipun.io/message_queue/appcontext"
 	"nipun.io/message_queue/domain"
+	service "nipun.io/message_queue/service/local"
 )
 
 type QueueHandler struct {
+	queueManager *service.QueueManager
 }
 
 func NewQueueHandler(dependencies *appcontext.Instance) *QueueHandler {
