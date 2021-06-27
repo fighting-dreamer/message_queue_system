@@ -1,6 +1,8 @@
 package service
 
-import "nipun.io/message_queue/service"
+import (
+	"nipun.io/message_queue/service"
+)
 
 type SenderService struct {
 	QueueManager      service.IQueueManager
@@ -8,5 +10,4 @@ type SenderService struct {
 	MessageBroker     service.IMessageBrokerService
 }
 
-func (ss *SenderService) GetMessage()         {}
-func (ss *SenderService) RegisterSubscriber() {}
+func (ss *SenderService) GetMessage() {}

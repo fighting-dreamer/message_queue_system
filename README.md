@@ -68,7 +68,6 @@
 
 8. SenderService
     - QueueManager
-    - SubscriberManager
     - MessageBroker
     1. GetMessage()
     2. RegisterSubscriber()
@@ -94,7 +93,7 @@
 
 2. RegisterSubscriber
    1. User calls SubscriberHandler.**RegisterSubscriberApi()**.
-   2. It calls the SenderService.**RegisterSubscriber()**.
+   2. It calls the subscriberManager.**RegisterSubscriber()**.
    3. It checks if the Queue exists using QueueManager?
       1. IF yes then continue
       2. Else raise exception and return.
