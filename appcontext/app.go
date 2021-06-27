@@ -1,8 +1,13 @@
 package appcontext
 
+import (
+	"nipun.io/message_queue/config"
+	"nipun.io/message_queue/logger"
+)
+
 func Init() {
-	Load()
+	config.Load()
 	LoadDependencies()
 
-	SetupLogger()
+	logger.SetupLogger()
 }

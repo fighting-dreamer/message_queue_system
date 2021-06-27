@@ -17,12 +17,14 @@ type Instance struct {
 var AppDependencies *Instance
 
 func LoadDependencies() {
+	AppDependencies = &Instance{}
 	addMessageStore(AppDependencies)
 	addQueueManager(AppDependencies)
 	addMessageBroker(AppDependencies)
 	addRecieverService(AppDependencies)
 	addSubscriberManager(AppDependencies)
 	addSenderService(AppDependencies)
+
 }
 
 func addMessageStore(dependencies *Instance) {
