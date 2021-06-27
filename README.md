@@ -63,14 +63,12 @@
 
 7. SubscriberManager
     1. RegisterSubscriber()
-    2. ValidateSubscriberRequest()
     3. GetQueueSubscribers()
 
 8. SenderService
     - QueueManager
     - MessageBroker
     1. GetMessage()
-    2. RegisterSubscriber()
 
 9. SubscriberHandler
     - SenderService

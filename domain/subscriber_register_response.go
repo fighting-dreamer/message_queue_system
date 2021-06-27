@@ -1,6 +1,6 @@
 package domain
 
 type SubscriberRegisterResponse struct {
-	ID        string
-	QueueName string
+	SubscriberID string `json:"subscriber_id"`
+	QueueName    string `json:"queue_name"`
 }
