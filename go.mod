@@ -3,6 +3,7 @@ module nipun.io/message_queue
 go 1.16
 
 require (
+	github.com/go-resty/resty/v2 v2.6.0
 	github.com/gorilla/mux v1.8.0
 	github.com/rs/zerolog v1.23.0
 	github.com/spf13/viper v1.8.1

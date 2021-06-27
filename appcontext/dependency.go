@@ -1,35 +1,40 @@
 package appcontext
 
 import (
+	resty "github.com/go-resty/resty/v2"
 	"nipun.io/message_queue/domain"
 	service "nipun.io/message_queue/service"
 	local_service "nipun.io/message_queue/service/local"
 )
 
 type Instance struct {
-	MessageStore      service.IMessageStoreService
-	QueueManager      service.IQueueManager
-	MessageBroker     service.IMessageBrokerService
-	RecieverService   service.IRecieverService
-	SubscriberManager service.ISubscriberManager
-	SenderService     service.ISenderService
+	CallBackChan        chan *domain.Message
+	MessageStoreService service.IMessageStoreService
+	QueueManager        service.IQueueManager
+	MessageBroker       service.IMessageBrokerService
+	RecieverService     service.IRecieverService
+	SubscriberManager   service.ISubscriberManager
+	SenderService       service.ISenderService
+	CallbackWorker      service.ICallBackWorker
 }
 
 var AppDependencies *Instance
 
 func LoadDependencies() {
-	AppDependencies = &Instance{}
+	AppDependencies = &Instance{
+		CallBackChan: make(chan *domain.Message),
+	}
 	addMessageStore(AppDependencies)
 	addQueueManager(AppDependencies)
 	addMessageBroker(AppDependencies)
 	addRecieverService(AppDependencies)
 	addSubscriberManager(AppDependencies)
 	addSenderService(AppDependencies)
-
+	addCallbackWorker(AppDependencies)
 }
 
 func addMessageStore(dependencies *Instance) {
-	dependencies.MessageStore = &local_service.MessageStoreService{}
+	dependencies.MessageStoreService = &local_service.MessageStoreService{}
 }
 
 func addQueueManager(dependencies *Instance) {
@@ -40,7 +45,10 @@ func addQueueManager(dependencies *Instance) {
 }
 
 func addMessageBroker(dependencies *Instance) {
-	dependencies.MessageBroker = &local_service.MessageBrokerService{}
+	dependencies.MessageBroker = &local_service.MessageBrokerService{
+		MessageStoreService: dependencies.MessageStoreService,
+		CallBackChan:        dependencies.CallBackChan,
+	}
 }
 
 func addRecieverService(dependencies *Instance) {
@@ -52,9 +60,10 @@ func addRecieverService(dependencies *Instance) {
 
 func addSubscriberManager(dependencies *Instance) {
 	dependencies.SubscriberManager = &local_service.SubscriberManager{
-		QueueManager: dependencies.QueueManager,
-		SubscriberToQueueMap: map[string]string{},
-		QueueToSubscriberListMap: map[string][]string{},
+		QueueManager:             dependencies.QueueManager,
+		SubscriberMap:            map[string]*domain.Subscriber{},
+		SubscriberToQueueMap:     map[string]string{},
+		QueueToSubscriberListMap: map[string][]*domain.Subscriber{},
 	}
 }
 
@@ -63,5 +72,13 @@ func addSenderService(dependencies *Instance) {
 		QueueManager:      dependencies.QueueManager,
 		SubscriberManager: dependencies.SubscriberManager,
 		MessageBroker:     dependencies.MessageBroker,
+	}
+}
+
+func addCallbackWorker(dependencies *Instance) {
+	dependencies.CallbackWorker = &local_service.CallBackWorker{
+		SubscriberManager: dependencies.SubscriberManager,
+		CallBackChan:      dependencies.CallBackChan,
+		HttpCli:           resty.New(),
 	}
 }

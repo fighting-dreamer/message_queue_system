@@ -42,8 +42,8 @@ func (sh *SubscriberHandler) RegisterSubscriberAPI(w http.ResponseWriter, r *htt
 		return
 	}
 	response := domain.SubscriberRegisterResponse{
-		SubscriberID:        registerSubscriberRequest.SubscriberID,
-		QueueName: registerSubscriberRequest.QueueName,
+		SubscriberID: registerSubscriberRequest.SubscriberID,
+		QueueName:    registerSubscriberRequest.QueueName,
 	}
 	domain.WriteResponse(http.StatusOK, response, w)
 }

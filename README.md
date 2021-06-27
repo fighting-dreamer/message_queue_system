@@ -99,7 +99,7 @@
       1. If yes then raise exception and return
       2. Else add subsciber in it and return success.
 
-3. PublishMessage
+-[x] PublishMessage
    1. User publish message using curl/http api on PublisherHandler.**PublishMessageApi()**.
    2. It calls the RecieverService.**EnqueueMessage()**.
    3. It validates the message queue using QueueManager?

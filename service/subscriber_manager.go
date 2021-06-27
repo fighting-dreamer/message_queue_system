@@ -4,5 +4,5 @@ import "nipun.io/message_queue/domain"
 
 type ISubscriberManager interface {
 	RegisterSubscriber(request *domain.SubscriberRegisterRequest) error
-	GetQueueSubscribers()
+	GetQueueSubscribers(queueName string) []*domain.Subscriber
 }

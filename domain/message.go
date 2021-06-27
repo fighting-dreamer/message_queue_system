@@ -1,10 +1,10 @@
 package domain
 
 type Metadata struct {
-	QueueName string
+	QueueName string `json:"queue_name"`
 }
 type Message struct {
-	ID       string
-	Metadata Metadata
-	Value    interface{}
+	ID       string      `json:"id"`
+	Metadata Metadata    `json:"metadata"`
+	Value    interface{} `json:"value"`
 }

@@ -1,5 +1,6 @@
 package domain
 
 type Subscriber struct {
-	ID string
+	ID  string
+	URL string
 }

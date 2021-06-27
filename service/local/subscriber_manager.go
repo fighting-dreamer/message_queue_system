@@ -12,10 +12,13 @@ var (
 
 type SubscriberManager struct {
 	// It is simplified for as subscriber and queue ID are just strings.
+	SubscriberMap            map[string]*domain.Subscriber
 	SubscriberToQueueMap     map[string]string
-	QueueToSubscriberListMap map[string][]string
+	QueueToSubscriberListMap map[string][]*domain.Subscriber
 	QueueManager             service.IQueueManager
 }
+
+// TODO : Create Subscriber
 
 func (sm *SubscriberManager) RegisterSubscriber(request *domain.SubscriberRegisterRequest) error {
 	// check if queue exists
@@ -31,15 +34,21 @@ func (sm *SubscriberManager) RegisterSubscriber(request *domain.SubscriberRegist
 		if queueName == request.QueueName {
 			// idempotent API
 			return nil
-		}else {
+		} else {
 			return RegisteredToOtherQueue
 		}
 	}
 	// subscriber is new and is not registered to any queue
 	// TODO : using locks to ensure concurrent operations can be carried out
+	sm.SubscriberMap[request.SubscriberID] = &domain.Subscriber{
+		ID:  request.SubscriberID,
+		URL: request.URL,
+	}
 	sm.SubscriberToQueueMap[request.SubscriberID] = request.QueueName
-	sm.QueueToSubscriberListMap[request.QueueName] = append(sm.QueueToSubscriberListMap[request.QueueName], request.SubscriberID)
+	sm.QueueToSubscriberListMap[request.QueueName] = append(sm.QueueToSubscriberListMap[request.QueueName], sm.SubscriberMap[request.SubscriberID])
 	return nil
 }
 
-func (sm *SubscriberManager) GetQueueSubscribers() {}
+func (sm *SubscriberManager) GetQueueSubscribers(queueName string) []*domain.Subscriber {
+	return sm.QueueToSubscriberListMap[queueName]
+}
