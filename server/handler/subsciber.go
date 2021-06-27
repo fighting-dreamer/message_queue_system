@@ -5,13 +5,17 @@ import (
 
 	"nipun.io/message_queue/appcontext"
 	"nipun.io/message_queue/domain"
+	"nipun.io/message_queue/service"
 )
 
 type SubscriberHandler struct {
+	SenderService service.ISenderService
 }
 
-func NewsubscriberHandler(dependencies *appcontext.Instance) *SubscriberHandler {
-	return &SubscriberHandler{}
+func NewSubscriberHandler(dependencies *appcontext.Instance) *SubscriberHandler {
+	return &SubscriberHandler{
+		SenderService: dependencies.SenderService,
+	}
 }
 
 func (sh *SubscriberHandler) RegisterSubscriberAPI(w http.ResponseWriter, r *http.Request) {

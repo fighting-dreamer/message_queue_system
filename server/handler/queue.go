@@ -5,15 +5,17 @@ import (
 
 	"nipun.io/message_queue/appcontext"
 	"nipun.io/message_queue/domain"
-	service "nipun.io/message_queue/service/local"
+	"nipun.io/message_queue/service"
 )
 
 type QueueHandler struct {
-	queueManager *service.QueueManager
+	QueueManager service.IQueueManager
 }
 
 func NewQueueHandler(dependencies *appcontext.Instance) *QueueHandler {
-	return &QueueHandler{}
+	return &QueueHandler{
+		QueueManager: dependencies.QueueManager,
+	}
 }
 
 func (qh *QueueHandler) CreateQueueAPI(w http.ResponseWriter, r *http.Request) {
