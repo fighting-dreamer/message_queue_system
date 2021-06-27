@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"io"
 	"net/http"
 
 	"nipun.io/message_queue/appcontext"
@@ -21,5 +22,25 @@ func NewQueueHandler(dependencies *appcontext.Instance) *QueueHandler {
 
 func (qh *QueueHandler) CreateQueueAPI(w http.ResponseWriter, r *http.Request) {
 	logger.Logger.Debug().Msg("QueueHandler Create API called")
-	domain.WriteResponse(http.StatusOK, nil, w)
+	// Parse the request
+	bodyBytes, _ := io.ReadAll(r.Body)
+	createQueueRequest := domain.CreateQueueRequest{}
+	err := getBody(r.Context(), bodyBytes, &createQueueRequest)
+	if err != nil {
+		domain.WriteErrorResponse(http.StatusBadRequest, []string{JsonParseError.Error()}, w)
+		return
+	}
+
+	// operate on request
+	err = qh.QueueManager.CreateQueue(createQueueRequest)
+
+	// send response
+	if err != nil {
+		domain.WriteErrorResponse(http.StatusInternalServerError, []string{err.Error()}, w)
+		return
+	}
+	response := domain.CreateQueueResponse{
+		Name: createQueueRequest.Name,
+	}
+	domain.WriteResponse(http.StatusOK, response, w)
 }

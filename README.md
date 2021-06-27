@@ -84,7 +84,7 @@
 3. PublishMessage
 4. PollMessage
 
-1. CreateQueue
+-[x] CreateQueue
     1. User calls QueueHandler.**CreateQueueApi()**.
     2. It calls QueueManager.**CreateQueue()** to creates a queue
     3. CreateQueue checks if the queue already existed ?

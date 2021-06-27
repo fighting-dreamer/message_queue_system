@@ -1,6 +1,7 @@
 package appcontext
 
 import (
+	"nipun.io/message_queue/domain"
 	service "nipun.io/message_queue/service"
 	local_service "nipun.io/message_queue/service/local"
 )
@@ -32,7 +33,10 @@ func addMessageStore(dependencies *Instance) {
 }
 
 func addQueueManager(dependencies *Instance) {
-	dependencies.QueueManager = &local_service.QueueManager{}
+	queueMap := map[string]*domain.Queue{}
+	dependencies.QueueManager = &local_service.QueueManager{
+		QueueMap: queueMap,
+	}
 }
 
 func addMessageBroker(dependencies *Instance) {
