@@ -5,17 +5,19 @@ import (
 	"nipun.io/message_queue/domain"
 	service "nipun.io/message_queue/service"
 	local_service "nipun.io/message_queue/service/local"
+	"sync"
 )
 
 type Instance struct {
-	CallBackChan        chan *domain.Message
-	MessageStoreService service.IMessageStoreService
-	QueueManager        service.IQueueManager
-	MessageBroker       service.IMessageBrokerService
-	RecieverService     service.IRecieverService
-	SubscriberManager   service.ISubscriberManager
-	SenderService       service.ISenderService
-	CallbackWorker      service.ICallBackWorker
+	CallBackChan             chan *domain.Message
+	MessageStoreService      service.IMessageStoreService
+	QueueManager             service.IQueueManager
+	MessageBroker            service.IMessageBrokerService
+	RecieverService          service.IRecieverService
+	SubscriberManager        service.ISubscriberManager
+	SenderService            service.ISenderService
+	CallbackWorker           service.ICallBackWorker
+	TransactionalLockManager service.ITransactionLockManager
 }
 
 var AppDependencies *Instance
@@ -24,6 +26,7 @@ func LoadDependencies() {
 	AppDependencies = &Instance{
 		CallBackChan: make(chan *domain.Message),
 	}
+	addTransactionalLockManager(AppDependencies)
 	addMessageStore(AppDependencies)
 	addQueueManager(AppDependencies)
 	addMessageBroker(AppDependencies)
@@ -31,6 +34,13 @@ func LoadDependencies() {
 	addSubscriberManager(AppDependencies)
 	addSenderService(AppDependencies)
 	addCallbackWorker(AppDependencies)
+}
+
+func addTransactionalLockManager(dependencies *Instance) {
+	dependencies.TransactionalLockManager = &local_service.TransactionLockManager{
+		KeeperState: map[string]string{},
+		Keeper:      map[string]*sync.Mutex{},
+	}
 }
 
 func addMessageStore(dependencies *Instance) {
