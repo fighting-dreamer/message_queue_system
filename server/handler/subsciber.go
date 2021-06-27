@@ -5,6 +5,7 @@ import (
 
 	"nipun.io/message_queue/appcontext"
 	"nipun.io/message_queue/domain"
+	"nipun.io/message_queue/logger"
 	"nipun.io/message_queue/service"
 )
 
@@ -19,11 +20,11 @@ func NewSubscriberHandler(dependencies *appcontext.Instance) *SubscriberHandler 
 }
 
 func (sh *SubscriberHandler) RegisterSubscriberAPI(w http.ResponseWriter, r *http.Request) {
-	appcontext.Logger.Debug().Msg("Subscriber Register API called")
+	logger.Logger.Debug().Msg("Subscriber Register API called")
 	domain.WriteResponse(http.StatusOK, nil, w)
 }
 
 func (sh *SubscriberHandler) PollMessageAPI(w http.ResponseWriter, r *http.Request) {
-	appcontext.Logger.Debug().Msg("Subscriber API called")
+	logger.Logger.Debug().Msg("Subscriber API called")
 	domain.WriteResponse(http.StatusOK, nil, w)
 }

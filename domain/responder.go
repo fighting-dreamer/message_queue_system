@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"nipun.io/message_queue/appcontext"
+	"nipun.io/message_queue/logger"
 )
 
 type errorResponse struct {
@@ -17,7 +17,7 @@ func WriteResponse(status int, response interface{}, rw http.ResponseWriter) {
 	}
 	body, err := json.Marshal(response)
 	if err != nil {
-		appcontext.Logger.Error().Err(err)
+		logger.Logger.Error().Err(err)
 		status = http.StatusInternalServerError
 	}
 	rw.Header().Add("Content-Type", "application/json")
@@ -32,7 +32,7 @@ func WriteErrorResponse(status int, errorMessages []string, rw http.ResponseWrit
 	errorResponse := errorResponse{Errors: errorMessages}
 	respBytes, err := json.Marshal(errorResponse)
 	if err != nil {
-		appcontext.Logger.Error().Err(err)
+		logger.Logger.Error().Err(err)
 		status = http.StatusInternalServerError
 	}
 	rw.Header().Add("Content-Type", "application/json")

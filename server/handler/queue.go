@@ -5,6 +5,7 @@ import (
 
 	"nipun.io/message_queue/appcontext"
 	"nipun.io/message_queue/domain"
+	"nipun.io/message_queue/logger"
 	"nipun.io/message_queue/service"
 )
 
@@ -19,6 +20,6 @@ func NewQueueHandler(dependencies *appcontext.Instance) *QueueHandler {
 }
 
 func (qh *QueueHandler) CreateQueueAPI(w http.ResponseWriter, r *http.Request) {
-	appcontext.Logger.Debug().Msg("QueueHandler Create API called")
+	logger.Logger.Debug().Msg("QueueHandler Create API called")
 	domain.WriteResponse(http.StatusOK, nil, w)
 }

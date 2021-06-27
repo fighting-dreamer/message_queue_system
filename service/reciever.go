@@ -1,5 +1,7 @@
 package service
 
+import "nipun.io/message_queue/domain"
+
 type IRecieverService interface {
-	EnqueueMessage()
+	EnqueueMessage(message domain.Message)
 }

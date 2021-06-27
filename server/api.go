@@ -7,23 +7,25 @@ import (
 	"github.com/urfave/negroni"
 	"gopkg.in/tylerb/graceful.v1"
 	"nipun.io/message_queue/appcontext"
+	"nipun.io/message_queue/config"
+	"nipun.io/message_queue/logger"
 	r "nipun.io/message_queue/server/router"
 )
 
 func listenServer(apiServer *graceful.Server) {
-	appcontext.Logger.Info().Msgf("starting api server on address : %s", apiServer.Addr)
+	logger.Logger.Info().Msgf("starting api server on address : %s", apiServer.Addr)
 	if err := apiServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		appcontext.Logger.Fatal().Err(err)
+		logger.Logger.Fatal().Err(err)
 	}
 }
 
 func StartApiServer(dependencies *appcontext.Instance) {
-	appcontext.Logger.Info().Msg("Starting API server")
+	logger.Logger.Info().Msg("Starting API server")
 
 	router := r.Router(dependencies)
 	n := negroni.New(negroni.NewRecovery())
 	n.UseHandlerFunc(router.ServeHTTP)
 
-	portInfo := ":" + strconv.Itoa(appcontext.AppPort())
+	portInfo := ":" + strconv.Itoa(config.AppPort())
 	n.Run(portInfo)
 }
