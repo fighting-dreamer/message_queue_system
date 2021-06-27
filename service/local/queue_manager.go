@@ -26,10 +26,11 @@ func (qm *QueueManager) CreateQueue(request domain.CreateQueueRequest) error {
 		return err
 	}
 
+	// TODO : using locks to ensure concurrent operations can be carried out
 	qm.QueueMap[request.Name] = &domain.Queue{
 		ID: request.Name,
 	}
-	logger.Logger.Info().Msgf("Createed Queue : %s", request.Name)
+	logger.Logger.Info().Msgf("Created Queue : %s", request.Name)
 
 	return nil
 }

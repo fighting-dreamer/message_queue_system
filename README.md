@@ -89,7 +89,7 @@
        2. Else return success.
     4. Pass the result to handler to create response.
 
-2. RegisterSubscriber
+-[x] RegisterSubscriber
    1. User calls SubscriberHandler.**RegisterSubscriberApi()**.
    2. It calls the subscriberManager.**RegisterSubscriber()**.
    3. It checks if the Queue exists using QueueManager?

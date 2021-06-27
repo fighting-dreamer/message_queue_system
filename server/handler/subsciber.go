@@ -33,13 +33,16 @@ func (sh *SubscriberHandler) RegisterSubscriberAPI(w http.ResponseWriter, r *htt
 		return
 	}
 
+	// operate on request
 	err = sh.SubscriberManager.RegisterSubscriber(&registerSubscriberRequest)
 
+	// response
 	if err != nil {
 		domain.WriteErrorResponse(http.StatusInternalServerError, []string{err.Error()}, w)
+		return
 	}
 	response := domain.SubscriberRegisterResponse{
-		ID:        registerSubscriberRequest.ID,
+		SubscriberID:        registerSubscriberRequest.SubscriberID,
 		QueueName: registerSubscriberRequest.QueueName,
 	}
 	domain.WriteResponse(http.StatusOK, response, w)
