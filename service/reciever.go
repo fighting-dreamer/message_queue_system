@@ -3,5 +3,5 @@ package service
 import "nipun.io/message_queue/domain"
 
 type IRecieverService interface {
-	EnqueueMessage(message domain.Message)
+	EnqueueMessage(message *domain.Message) (*domain.Message, error)
 }

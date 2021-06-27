@@ -10,4 +10,17 @@ type RecieverService struct {
 	MessageBroker service.IMessageBrokerService
 }
 
-func (rs *RecieverService) EnqueueMessage(message domain.Message) {}
+func (rs *RecieverService) EnqueueMessage(message *domain.Message) (*domain.Message, error) {
+	queueName := message.Metadata.QueueName
+	queueRef, err := rs.QueueManager.GetQueue(queueName)
+	if err != nil {
+		return nil, err
+	}
+	messageRef, err := rs.MessageBroker.SetMessage(queueRef, message)
+	if err != nil {
+		// send the original message
+		return message, err
+	}
+	// send the modified message
+	return messageRef, err
+}

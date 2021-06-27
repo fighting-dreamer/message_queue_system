@@ -36,6 +36,6 @@ func (ph *PublisherHandler) PublishMessageAPI(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	ph.RecieverService.EnqueueMessage(message)
+	ph.RecieverService.EnqueueMessage(&message)
 	domain.WriteResponse(http.StatusOK, nil, w)
 }
