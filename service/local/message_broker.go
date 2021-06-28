@@ -16,7 +16,7 @@ func (mbs *MessageBrokerService) SetMessage(queue *domain.Queue, message *domain
 	if err != nil {
 		return nil, err
 	}
-	mbs.CallSubscribers(queue, message) // not handling error
+	mbs.CallSubscribers(queue, &messageWithID) // not handling error
 	return &messageWithID, nil
 }
 func (mbs *MessageBrokerService) GetMessage(queue *domain.Queue, subscriberID string, messageID int) (domain.Message, error) {
