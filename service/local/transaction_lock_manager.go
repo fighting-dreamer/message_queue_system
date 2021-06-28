@@ -2,6 +2,7 @@ package service
 
 import (
 	"nipun.io/message_queue/logger"
+	"strings"
 	"sync"
 )
 
@@ -17,27 +18,26 @@ const (
 var mutex sync.Mutex // Global Mutex, all operation of locking and un-locking happen in a serial manner using this.
 
 func (tlm *TransactionLockManager) AcquireLock(entities []string) {
-	for _, entity := range entities {
-		mutex.Lock()
-		if tlm.Keeper[entity] == nil {
-			tlm.Keeper[entity] = &sync.Mutex{}
-			logger.Logger.Debug().Msgf("Created mutex for entity : %s", entity)
-		}
-		tlm.Keeper[entity].Lock() // who ever want to acquire a lock on something already locked, will have to wait.
-		logger.Logger.Debug().Msgf("Acquired lock on mutex for entity : %s", entity)
-		tlm.KeeperState[entity] = Locked
-		mutex.Unlock()
+	mutex.Lock()
+	entitiesString := strings.Join(entities, "-")
+	if tlm.Keeper[entitiesString] == nil {
+		tlm.Keeper[entitiesString] = &sync.Mutex{}
+		logger.Logger.Debug().Msgf("Created mutex for entity : %s", entitiesString)
 	}
+	tlm.Keeper[entitiesString].Lock() // who ever want to acquire a lock on something already locked, will have to wait.
+	logger.Logger.Debug().Msgf("Acquired lock on mutex for entity : %s", entitiesString)
+	tlm.KeeperState[entitiesString] = Locked
+	mutex.Unlock()
 }
 
 func (tlm *TransactionLockManager) ReleaseLock(entities []string) {
-	for _, entity := range entities {
-		mutex.Lock()
-		if tlm.KeeperState[entity] == Locked {
-			logger.Logger.Debug().Msgf("released lock on mutex for entity : %s", entity)
-			tlm.Keeper[entity].Unlock()
-			tlm.KeeperState[entity] = ""
-		}
-		mutex.Unlock()
+	mutex.Lock() // to deal with classic deadlock scenario
+	entitiesString := strings.Join(entities, "-")
+
+	if tlm.KeeperState[entitiesString] == Locked {
+		logger.Logger.Debug().Msgf("released lock on mutex for entity : %s", entitiesString)
+		tlm.Keeper[entitiesString].Unlock()
+		tlm.KeeperState[entitiesString] = ""
 	}
+	mutex.Unlock()
 }
