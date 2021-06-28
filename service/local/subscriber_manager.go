@@ -108,12 +108,40 @@ func (sm *SubscriberManager) IncrementAckCounter(queueName string, subscriberID 
 	expectedQueueName := sm.SubscriberToQueueMap[subscriberID]
 	var err error = nil
 	if expectedQueueName == queueName {
-		sm.AckCounterPerQueuePerSubscriber[key] = sm.UnackCounterPerQueuePerSubscriber[key] + 1
-		logger.Logger.Debug().Msgf("Un-ack counter value for queue : %s, for subscriber : %s : %d", queueName, subscriberID, sm.UnackCounterPerQueuePerSubscriber[key])
+		sm.AckCounterPerQueuePerSubscriber[key] = sm.AckCounterPerQueuePerSubscriber[key] + 1
+		logger.Logger.Debug().Msgf("Un-ack counter value for queue : %s, for subscriber : %s : %d", queueName, subscriberID, sm.AckCounterPerQueuePerSubscriber[key])
 	} else {
 		err = WrongSubscriberOrQueue
 	}
 	sm.TransactionLockManager.ReleaseLock([]string{"SubscriberManager"})
 
 	return err
+}
+
+func (sm *SubscriberManager) GetAckCounter(queueName string, subscriberID string) int64 {
+	key := fmt.Sprintf("queue-%s_subscriber-%s", queueName, subscriberID)
+	sm.TransactionLockManager.AcquireLock([]string{"SubscriberManager"})
+	expectedQueueName := sm.SubscriberToQueueMap[subscriberID]
+	var res int64 = 0
+	if expectedQueueName == queueName {
+		res = sm.AckCounterPerQueuePerSubscriber[key]
+		logger.Logger.Debug().Msgf("Un-ack counter value for queue : %s, for subscriber : %s : %d", queueName, subscriberID, sm.UnackCounterPerQueuePerSubscriber[key])
+	}
+	sm.TransactionLockManager.ReleaseLock([]string{"SubscriberManager"})
+
+	return res
+}
+
+func (sm *SubscriberManager) GetUnackCounter(queueName string, subscriberID string) int64 {
+	key := fmt.Sprintf("queue-%s_subscriber-%s", queueName, subscriberID)
+	sm.TransactionLockManager.AcquireLock([]string{"SubscriberManager"})
+	expectedQueueName := sm.SubscriberToQueueMap[subscriberID]
+	var res int64 = 0
+	if expectedQueueName == queueName {
+		res = sm.UnackCounterPerQueuePerSubscriber[key]
+		logger.Logger.Debug().Msgf("Un-ack counter value for queue : %s, for subscriber : %s : %d", queueName, subscriberID, sm.UnackCounterPerQueuePerSubscriber[key])
+	}
+	sm.TransactionLockManager.ReleaseLock([]string{"SubscriberManager"})
+
+	return res
 }

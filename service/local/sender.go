@@ -6,6 +6,8 @@ import (
 	"nipun.io/message_queue/service"
 )
 
+const queueCap = 10
+
 type SenderService struct {
 	QueueManager      service.IQueueManager
 	SubscriberManager service.ISubscriberManager
@@ -24,9 +26,15 @@ func (ss *SenderService) GetMessage(request *domain.SubscriberPollRequest) ([]do
 
 	res := []domain.Message{}
 
-	for i := 0; i < request.FetchCount; i++ {
-		msgID := request.MessageID + i
-		message, err := ss.MessageBroker.GetMessage(queueRef, request.SubscriberID, msgID)
+	// NOT IMPLEMENTING THE COMPLEX LOGIC FOR NOW
+	//ackCounter := ss.SubscriberManager.GetAckCounter(queueName, request.SubscriberID)
+	//unackCounter := ss.SubscriberManager.GetUnackCounter(queueName, request.SubscriberID)
+	//fetchAsPerSubscriberRequest := request.MessageID + request.FetchCount
+	//fetchFromMessageID := max(unackCounter, int64(request.MessageID))
+	//fetchTillMessageID := min(ackCounter + queueCap, int64(fetchAsPerSubscriberRequest))
+
+	for msgID := request.MessageID; msgID < (request.MessageID + request.FetchCount); msgID++ {
+		message, err := ss.MessageBroker.GetMessage(queueRef, request.SubscriberID, int64(msgID))
 		if err != nil {
 			return []domain.Message{}, err
 		}
@@ -34,7 +42,7 @@ func (ss *SenderService) GetMessage(request *domain.SubscriberPollRequest) ([]do
 		ss.SubscriberManager.IncrementUnackCounter(queueName, request.SubscriberID)
 		res = append(res, message)
 	}
-
+	logger.Logger.Debug().Msgf("unackCounter : %d, Ack Counter : %d", ss.SubscriberManager.GetUnackCounter(queueName, request.SubscriberID), ss.SubscriberManager.GetAckCounter(queueName, request.SubscriberID))
 	logger.Logger.Debug().Msgf("%+v", res)
 
 	return res, nil

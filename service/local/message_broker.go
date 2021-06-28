@@ -19,9 +19,9 @@ func (mbs *MessageBrokerService) SetMessage(queue *domain.Queue, message *domain
 	mbs.CallSubscribers(queue, &messageWithID) // not handling error
 	return &messageWithID, nil
 }
-func (mbs *MessageBrokerService) GetMessage(queue *domain.Queue, subscriberID string, messageID int) (domain.Message, error) {
+func (mbs *MessageBrokerService) GetMessage(queue *domain.Queue, subscriberID string, messageID int64) (domain.Message, error) {
 	logger.Logger.Debug().Msg("Message Broker GetMessage")
-	msg, err := mbs.MessageStoreService.GetMessage(int64(messageID))
+	msg, err := mbs.MessageStoreService.GetMessage(messageID)
 	if err != nil {
 		return domain.Message{}, err
 	}

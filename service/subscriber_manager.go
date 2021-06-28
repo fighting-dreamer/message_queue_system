@@ -8,4 +8,6 @@ type ISubscriberManager interface {
 	GetSubscriberQueueName(subscriberID string) string
 	IncrementUnackCounter(queueName string, subscriberID string) error
 	IncrementAckCounter(queueName string, subscriberID string) error
+	GetUnackCounter(queueName string, subscriberID string) int64
+	GetAckCounter(queueName string, subscriberID string) int64
 }

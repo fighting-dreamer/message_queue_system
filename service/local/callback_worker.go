@@ -3,7 +3,6 @@ package service
 import (
 	"encoding/json"
 	"github.com/go-resty/resty/v2"
-
 	"nipun.io/message_queue/domain"
 	"nipun.io/message_queue/logger"
 	"nipun.io/message_queue/service"
@@ -20,9 +19,11 @@ func (cw *CallBackWorker) CallSubscribers(message *domain.Message) error {
 	subscribers := cw.SubscriberManager.GetQueueSubscribers(queueName)
 	// TODO : correct implementation based on algorithm
 	for _, subscriber := range subscribers {
-		logger.Logger.Debug().Msgf("Trying to message : %+v, for subsciber : %+v", message, subscriber)
+		logger.Logger.Debug().Msgf("Trying to message : %+v, for subscriber : %+v", message, subscriber)
 		go func() {
+			unackCounter := cw.SubscriberManager.GetUnackCounter(queueName, subscriber.ID)
 			url := subscriber.URL
+			message.ID = max(unackCounter, message.ID)
 			res, err := json.Marshal(message)
 			if err != nil {
 				// log and increment and return
