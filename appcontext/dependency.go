@@ -76,11 +76,13 @@ func addRecieverService(dependencies *Instance) {
 
 func addSubscriberManager(dependencies *Instance) {
 	dependencies.SubscriberManager = &local_service.SubscriberManager{
-		QueueManager:             dependencies.QueueManager,
-		SubscriberMap:            map[string]*domain.Subscriber{},
-		SubscriberToQueueMap:     map[string]string{},
-		QueueToSubscriberListMap: map[string][]*domain.Subscriber{},
-		TransactionLockManager:   dependencies.TransactionalLockManager,
+		UnackCounterPerQueuePerSubscriber: map[string]int64{},
+		AckCounterPerQueuePerSubscriber:   map[string]int64{},
+		QueueManager:                      dependencies.QueueManager,
+		SubscriberMap:                     map[string]*domain.Subscriber{},
+		SubscriberToQueueMap:              map[string]string{},
+		QueueToSubscriberListMap:          map[string][]*domain.Subscriber{},
+		TransactionLockManager:            dependencies.TransactionalLockManager,
 	}
 }
 

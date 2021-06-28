@@ -6,4 +6,6 @@ type ISubscriberManager interface {
 	RegisterSubscriber(request *domain.SubscriberRegisterRequest) error
 	GetQueueSubscribers(queueName string) []*domain.Subscriber
 	GetSubscriberQueueName(subscriberID string) string
+	IncrementUnackCounter(queueName string, subscriberID string) error
+	IncrementAckCounter(queueName string, subscriberID string) error
 }

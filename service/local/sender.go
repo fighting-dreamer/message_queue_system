@@ -28,9 +28,10 @@ func (ss *SenderService) GetMessage(request *domain.SubscriberPollRequest) ([]do
 		msgID := request.MessageID + i
 		message, err := ss.MessageBroker.GetMessage(queueRef, request.SubscriberID, msgID)
 		if err != nil {
-			// either all batch messages go through, OR none
 			return []domain.Message{}, err
 		}
+		// err can be due to wrong mapping, if so, that can be ignored right now.
+		ss.SubscriberManager.IncrementUnackCounter(queueName, request.SubscriberID)
 		res = append(res, message)
 	}
 

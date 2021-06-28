@@ -22,9 +22,7 @@ func (mss *MessageStoreService) GetMessage(messageID int64) (domain.Message, err
 	// TODO_Done_Modified : proper algorithm to be implemented
 	// locks on MessageStoreService rather than MessageIDMap
 	mss.TransactionLockManager.AcquireLock([]string{"MessageStoreService"})
-
 	message := mss.MessageIDMap[messageID]
-
 	mss.TransactionLockManager.ReleaseLock([]string{"MessageStoreService"})
 
 	if message.ID == messageID {

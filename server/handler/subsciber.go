@@ -69,3 +69,23 @@ func (sh *SubscriberHandler) PollMessageAPI(w http.ResponseWriter, r *http.Reque
 	}
 	domain.WriteResponse(http.StatusOK, response, w)
 }
+
+func (sh *SubscriberHandler) AckMessageAPI(w http.ResponseWriter, r *http.Request) {
+	logger.Logger.Debug().Msg("Subscriber AckMessageAPI API called")
+	// Parse the request
+	bodyBytes, _ := io.ReadAll(r.Body)
+	ackMessageRequest := domain.AckMessageRequest{}
+	err := getBody(r.Context(), bodyBytes, &ackMessageRequest)
+	if err != nil {
+		domain.WriteErrorResponse(http.StatusBadRequest, []string{JsonParseError.Error()}, w)
+		return
+	}
+	// silent API
+	err = sh.SubscriberManager.IncrementAckCounter(ackMessageRequest.QueueName, ackMessageRequest.SubscriberID)
+	if err != nil {
+		domain.WriteErrorResponse(http.StatusBadRequest, []string{err.Error()}, w)
+		return
+	}
+	response := ackMessageRequest
+	domain.WriteResponse(http.StatusOK, response, w)
+}
