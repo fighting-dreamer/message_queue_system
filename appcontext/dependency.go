@@ -55,6 +55,7 @@ func addQueueManager(dependencies *Instance) {
 	queueMap := map[string]*domain.Queue{}
 	dependencies.QueueManager = &local_service.QueueManager{
 		QueueMap: queueMap,
+		TransactionLockManager: dependencies.TransactionalLockManager,
 	}
 }
 
