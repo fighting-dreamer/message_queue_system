@@ -80,6 +80,7 @@ func addSubscriberManager(dependencies *Instance) {
 		SubscriberMap:            map[string]*domain.Subscriber{},
 		SubscriberToQueueMap:     map[string]string{},
 		QueueToSubscriberListMap: map[string][]*domain.Subscriber{},
+		TransactionLockManager: dependencies.TransactionalLockManager,
 	}
 }
 
