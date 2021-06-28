@@ -48,14 +48,14 @@ func addMessageStore(dependencies *Instance) {
 		MessageIDMap:            map[int64]domain.Message{},
 		QueueToMessageIDListMap: map[string][]int64{},
 		QueueCounter:            map[string]int64{},
-		TransactionLockManager : dependencies.TransactionalLockManager,
+		TransactionLockManager:  dependencies.TransactionalLockManager,
 	}
 }
 
 func addQueueManager(dependencies *Instance) {
 	queueMap := map[string]*domain.Queue{}
 	dependencies.QueueManager = &local_service.QueueManager{
-		QueueMap: queueMap,
+		QueueMap:               queueMap,
 		TransactionLockManager: dependencies.TransactionalLockManager,
 	}
 }
@@ -80,7 +80,7 @@ func addSubscriberManager(dependencies *Instance) {
 		SubscriberMap:            map[string]*domain.Subscriber{},
 		SubscriberToQueueMap:     map[string]string{},
 		QueueToSubscriberListMap: map[string][]*domain.Subscriber{},
-		TransactionLockManager: dependencies.TransactionalLockManager,
+		TransactionLockManager:   dependencies.TransactionalLockManager,
 	}
 }
 

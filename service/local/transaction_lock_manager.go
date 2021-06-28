@@ -18,12 +18,14 @@ const (
 var mutex sync.Mutex // Global Mutex, all operation of locking and un-locking happen in a serial manner using this.
 
 func (tlm *TransactionLockManager) AcquireLock(entities []string) {
+	logger.Logger.Debug().Msgf("Trying to acquire operation lock for %+v", entities)
 	mutex.Lock()
 	entitiesString := strings.Join(entities, "-")
 	if tlm.Keeper[entitiesString] == nil {
 		tlm.Keeper[entitiesString] = &sync.Mutex{}
 		logger.Logger.Debug().Msgf("Created mutex for entity : %s", entitiesString)
 	}
+	logger.Logger.Debug().Msgf("Trying to acquire lock for %+v", entities)
 	tlm.Keeper[entitiesString].Lock() // who ever want to acquire a lock on something already locked, will have to wait.
 	logger.Logger.Debug().Msgf("Acquired lock on mutex for entity : %s", entitiesString)
 	tlm.KeeperState[entitiesString] = Locked

@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"nipun.io/message_queue/domain"
+	"nipun.io/message_queue/logger"
 	"nipun.io/message_queue/service"
 )
 
@@ -16,7 +17,7 @@ type SubscriberManager struct {
 	SubscriberToQueueMap     map[string]string
 	QueueToSubscriberListMap map[string][]*domain.Subscriber
 	QueueManager             service.IQueueManager
-	TransactionLockManager service.ITransactionLockManager
+	TransactionLockManager   service.ITransactionLockManager
 }
 
 // TODO : Create Subscriber
@@ -64,7 +65,8 @@ func (sm *SubscriberManager) GetQueueSubscribers(queueName string) []*domain.Sub
 	// TODO : using locks on QueueToSubscriberListMap to ensure concurrent operations can be carried out
 	sm.TransactionLockManager.AcquireLock([]string{"QueueToSubscriberListMap"})
 	subsribers := sm.QueueToSubscriberListMap[queueName]
-	sm.TransactionLockManager.AcquireLock([]string{"QueueToSubscriberListMap"})
+	logger.Logger.Debug().Msgf("subscribers for queue %s : %+v", queueName, subsribers)
+	sm.TransactionLockManager.ReleaseLock([]string{"QueueToSubscriberListMap"})
 	return subsribers
 }
 

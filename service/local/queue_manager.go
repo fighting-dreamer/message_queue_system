@@ -12,7 +12,7 @@ var (
 )
 
 type QueueManager struct {
-	QueueMap map[string]*domain.Queue
+	QueueMap               map[string]*domain.Queue
 	TransactionLockManager service.ITransactionLockManager
 }
 

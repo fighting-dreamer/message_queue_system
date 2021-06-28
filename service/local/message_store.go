@@ -15,7 +15,7 @@ type MessageStoreService struct {
 	MessageIDMap            map[int64]domain.Message
 	QueueToMessageIDListMap map[string][]int64
 	QueueCounter            map[string]int64
-	TransactionLockManager service.ITransactionLockManager
+	TransactionLockManager  service.ITransactionLockManager
 }
 
 func (mss *MessageStoreService) GetMessage(messageID int64) (domain.Message, error) {
