@@ -35,6 +35,8 @@ func (qm *QueueManager) CreateQueue(request domain.CreateQueueRequest) error {
 	return nil
 }
 func (qm *QueueManager) GetQueue(queueName string) (*domain.Queue, error) {
+	// maps are not good for concurrent reads
+	// TODO: we want to acquire a lock on the queue-map
 	queueRef := qm.QueueMap[queueName]
 	if queueRef == nil {
 		return nil, QueueDoesNotExists

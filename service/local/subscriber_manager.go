@@ -27,6 +27,7 @@ func (sm *SubscriberManager) RegisterSubscriber(request *domain.SubscriberRegist
 		return err
 	}
 	// check if subscriber exist and is already registered to that queue
+	// TODO : use lock for the use of SubscriberToQueueMap
 	queueName := sm.SubscriberToQueueMap[request.SubscriberID]
 	// TODO : validation check for queue registration to not have empty string queues
 	if queueName != "" {
@@ -39,7 +40,9 @@ func (sm *SubscriberManager) RegisterSubscriber(request *domain.SubscriberRegist
 		}
 	}
 	// subscriber is new and is not registered to any queue
-	// TODO : using locks to ensure concurrent operations can be carried out
+	// TODO : using locks on SubscriberMap to ensure concurrent operations can be carried out
+	// TODO : using locks on SubscriberToQueueMap to ensure concurrent operations can be carried out
+	// TODO : using locks on QueueToSubscriberListMap to ensure concurrent operations can be carried out
 	sm.SubscriberMap[request.SubscriberID] = &domain.Subscriber{
 		ID:  request.SubscriberID,
 		URL: request.URL,
@@ -50,9 +53,11 @@ func (sm *SubscriberManager) RegisterSubscriber(request *domain.SubscriberRegist
 }
 
 func (sm *SubscriberManager) GetQueueSubscribers(queueName string) []*domain.Subscriber {
+	// TODO : using locks on QueueToSubscriberListMap to ensure concurrent operations can be carried out
 	return sm.QueueToSubscriberListMap[queueName]
 }
 
 func (sm *SubscriberManager) GetSubscriberQueueName(subscriberID string) string {
+	// TODO : using locks on SubscriberToQueueMap to ensure concurrent operations can be carried out
 	return sm.SubscriberToQueueMap[subscriberID]
 }

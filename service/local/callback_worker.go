@@ -18,6 +18,7 @@ type CallBackWorker struct {
 func (cw *CallBackWorker) CallSubscribers(message *domain.Message) error {
 	queueName := message.Metadata.QueueName
 	subscribers := cw.SubscriberManager.GetQueueSubscribers(queueName)
+	// TODO : correct implementation based on algorithm
 	for _, subscriber := range subscribers {
 		logger.Logger.Debug().Msgf("Trying to message : %+v, for subsciber : %+v", message, subscriber)
 		go func() {

@@ -26,7 +26,11 @@ func (ss *SenderService) GetMessage(request *domain.SubscriberPollRequest) ([]do
 
 	for i := 0; i < request.FetchCount; i++ {
 		msgID := request.MessageID + i
-		message := ss.MessageBroker.GetMessage(queueRef, request.SubscriberID, msgID)
+		message, err := ss.MessageBroker.GetMessage(queueRef, request.SubscriberID, msgID)
+		if err != nil {
+			// either all batch messages go through, OR none
+			return []domain.Message{}, err
+		}
 		res = append(res, message)
 	}
 

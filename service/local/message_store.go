@@ -1,33 +1,35 @@
 package service
 
 import (
-	"math/rand"
+	"errors"
 	"nipun.io/message_queue/domain"
-	"nipun.io/message_queue/logger"
+)
+
+var (
+	MessageDoesNotExist = errors.New("MessageDoesNotExist")
 )
 
 type MessageStoreService struct {
-	MessageIDMap            map[int]domain.Message
-	QueueToMessageIDListMap map[string][]int
+	MessageIDMap            map[int64]domain.Message
+	QueueToMessageIDListMap map[string][]int64
+	QueueCounter            map[string]int64
 }
 
-func (mss *MessageStoreService) GetMessage(messageID int) domain.Message {
+func (mss *MessageStoreService) GetMessage(messageID int64) (domain.Message, error) {
 	// TODO : proper algorithm to be implemented
-	var tempMsg domain.Message
-	flag := false
-	for k, v := range mss.MessageIDMap {
-		logger.Logger.Debug().Msgf("Key : %d, Value : %+v", k, v)
-		if rand.Int31n(1000) > 500 && flag == false {
-			tempMsg = v
-			flag = true
-		}
+	message := mss.MessageIDMap[messageID]
+	if message.ID == messageID {
+		return message, nil
 	}
-	return tempMsg
+	return domain.Message{}, MessageDoesNotExist
 }
-func (mss *MessageStoreService) SetMessage(queueName string, message domain.Message) error {
-	message.ID = int(rand.Int31n(1000))
+
+func (mss *MessageStoreService) SetMessage(queueName string, message domain.Message) (domain.Message, error) {
+	// TODO : acquire lock on QueueCounter
+	// TODO : acquire lock on MessageIDMap
+	// TODO : acquire lock on QueueToMessageIDListMap
+	message.ID = mss.QueueCounter[queueName] + 1
 	mss.MessageIDMap[message.ID] = message
 	mss.QueueToMessageIDListMap[queueName] = append(mss.QueueToMessageIDListMap[queueName], message.ID)
-	return nil
+	return message, nil
 }
-func (mss *MessageStoreService) DeleteMessage() {}

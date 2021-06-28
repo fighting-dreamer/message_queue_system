@@ -45,8 +45,9 @@ func addTransactionalLockManager(dependencies *Instance) {
 
 func addMessageStore(dependencies *Instance) {
 	dependencies.MessageStoreService = &local_service.MessageStoreService{
-		MessageIDMap:            map[int]domain.Message{},
-		QueueToMessageIDListMap: map[string][]int{},
+		MessageIDMap:            map[int64]domain.Message{},
+		QueueToMessageIDListMap: map[string][]int64{},
+		QueueCounter:            map[string]int64{},
 	}
 }
 

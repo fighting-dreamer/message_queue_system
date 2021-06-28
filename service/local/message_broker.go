@@ -12,16 +12,22 @@ type MessageBrokerService struct {
 }
 
 func (mbs *MessageBrokerService) SetMessage(queue *domain.Queue, message *domain.Message) (*domain.Message, error) {
-	mbs.MessageStoreService.SetMessage(queue.ID, *message)
+	messageWithID, err := mbs.MessageStoreService.SetMessage(queue.ID, *message)
+	if err != nil {
+		return nil, err
+	}
 	mbs.CallSubscribers(queue, message)
-	return nil, nil
+	return &messageWithID, nil
 }
-func (mbs *MessageBrokerService) GetMessage(queue *domain.Queue, subscriberID string, messageID int) domain.Message {
+func (mbs *MessageBrokerService) GetMessage(queue *domain.Queue, subscriberID string, messageID int) (domain.Message, error) {
 	logger.Logger.Debug().Msg("Message Broker GetMessage")
-	msg := mbs.MessageStoreService.GetMessage(messageID)
-	return msg
+	msg, err := mbs.MessageStoreService.GetMessage(int64(messageID))
+	if err != nil {
+		return domain.Message{}, err
+	}
+	return msg, nil
 }
-func (mbs *MessageBrokerService) DeleteMessage() {}
+
 func (mbs *MessageBrokerService) CallSubscribers(queueRef *domain.Queue, message *domain.Message) error {
 	logger.Logger.Debug().Msg("Message Broker callsubscribers")
 	mbs.CallBackChan <- message
