@@ -12,7 +12,7 @@ type RecieverService struct {
 }
 
 func (rs *RecieverService) EnqueueMessage(message *domain.Message) (*domain.Message, error) {
-	logger.Logger.Debug().Msgf("RecieverService EnqueueMessage is called %+v", message.Value)
+	logger.Logger.Debug().Msgf("RecieverService EnqueueMessage is called %+v", message)
 	queueName := message.Metadata.QueueName
 	queueRef, err := rs.QueueManager.GetQueue(queueName)
 	logger.Logger.Debug().Msgf("Got Queue : %s", queueRef.ID)

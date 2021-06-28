@@ -48,6 +48,7 @@ func addMessageStore(dependencies *Instance) {
 		MessageIDMap:            map[int64]domain.Message{},
 		QueueToMessageIDListMap: map[string][]int64{},
 		QueueCounter:            map[string]int64{},
+		TransactionLockManager : dependencies.TransactionalLockManager,
 	}
 }
 
