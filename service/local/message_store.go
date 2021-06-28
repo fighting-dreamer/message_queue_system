@@ -19,12 +19,13 @@ type MessageStoreService struct {
 }
 
 func (mss *MessageStoreService) GetMessage(messageID int64) (domain.Message, error) {
-	// TODO : proper algorithm to be implemented
-	mss.TransactionLockManager.AcquireLock([]string{"MessageIDMap"})
+	// TODO_Done_Modified : proper algorithm to be implemented
+	// locks on MessageStoreService rather than MessageIDMap
+	mss.TransactionLockManager.AcquireLock([]string{"MessageStoreService"})
 
 	message := mss.MessageIDMap[messageID]
 
-	mss.TransactionLockManager.ReleaseLock([]string{"MessageIDMap"})
+	mss.TransactionLockManager.ReleaseLock([]string{"MessageStoreService"})
 
 	if message.ID == messageID {
 		return message, nil
@@ -33,16 +34,17 @@ func (mss *MessageStoreService) GetMessage(messageID int64) (domain.Message, err
 }
 
 func (mss *MessageStoreService) SetMessage(queueName string, message domain.Message) (domain.Message, error) {
-	// TODO : acquire lock on QueueCounter
-	// TODO : acquire lock on MessageIDMap
-	// TODO : acquire lock on QueueToMessageIDListMap
-	mss.TransactionLockManager.AcquireLock([]string{"QueueCounter", "MessageIDMap", "QueueToMessageIDListMap"})
+	// TODO_Done_Modified : acquire lock on QueueCounter
+	// TODO_Done_Modified : acquire lock on MessageIDMap
+	// TODO_Done_Modified : acquire lock on QueueToMessageIDListMap
+	// locks on MessageStoreService rather than "QueueCounter", "MessageIDMap", "QueueToMessageIDListMap", coz of possibility of the deadlock.
+	mss.TransactionLockManager.AcquireLock([]string{"MessageStoreService"})
 	logger.Logger.Debug().Msgf("Setting started %+v : ", message)
 	message.ID = mss.QueueCounter[queueName] + 1
 	mss.QueueCounter[queueName] = message.ID
 	mss.MessageIDMap[message.ID] = message
 	mss.QueueToMessageIDListMap[queueName] = append(mss.QueueToMessageIDListMap[queueName], message.ID)
 	logger.Logger.Debug().Msgf("Setting completed %+v : ", message)
-	mss.TransactionLockManager.ReleaseLock([]string{"QueueCounter", "MessageIDMap", "QueueToMessageIDListMap"})
+	mss.TransactionLockManager.ReleaseLock([]string{"MessageStoreService"})
 	return message, nil
 }

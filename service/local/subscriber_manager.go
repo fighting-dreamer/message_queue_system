@@ -29,10 +29,11 @@ func (sm *SubscriberManager) RegisterSubscriber(request *domain.SubscriberRegist
 		return err
 	}
 	// check if subscriber exist and is already registered to that queue
-	// TODO : use lock for the use of SubscriberToQueueMap
-	sm.TransactionLockManager.AcquireLock([]string{"SubscriberToQueueMap"})
+	// TODO_Done_Modified : use lock for the use of SubscriberToQueueMap
+	// locks on SubscriberManager rather than SubscriberToQueueMap, due to deadlock problem
+	sm.TransactionLockManager.AcquireLock([]string{"SubscriberManager"})
 	queueName := sm.SubscriberToQueueMap[request.SubscriberID]
-	sm.TransactionLockManager.ReleaseLock([]string{"SubscriberToQueueMap"})
+	sm.TransactionLockManager.ReleaseLock([]string{"SubscriberManager"})
 
 	// TODO : validation check for queue registration to not have empty string queues
 	if queueName != "" {
@@ -45,10 +46,11 @@ func (sm *SubscriberManager) RegisterSubscriber(request *domain.SubscriberRegist
 		}
 	}
 	// subscriber is new and is not registered to any queue
-	// TODO : using locks on SubscriberMap to ensure concurrent operations can be carried out
-	// TODO : using locks on SubscriberToQueueMap to ensure concurrent operations can be carried out
-	// TODO : using locks on QueueToSubscriberListMap to ensure concurrent operations can be carried out
-	sm.TransactionLockManager.AcquireLock([]string{"SubscriberToQueueMap", "SubscriberMap", "QueueToSubscriberListMap"})
+	// TODO_Done_Modified : using locks on SubscriberMap to ensure concurrent operations can be carried out
+	// TODO_Done_Modified : using locks on SubscriberToQueueMap to ensure concurrent operations can be carried out
+	// TODO_Done_Modified : using locks on QueueToSubscriberListMap to ensure concurrent operations can be carried out
+	// locks on SubscriberManager rather than SubscriberToQueueMap,SubscriberMap,QueueToSubscriberListMap ; due to deadlock problem
+	sm.TransactionLockManager.AcquireLock([]string{"SubscriberManager"})
 
 	sm.SubscriberMap[request.SubscriberID] = &domain.Subscriber{
 		ID:  request.SubscriberID,
@@ -57,23 +59,25 @@ func (sm *SubscriberManager) RegisterSubscriber(request *domain.SubscriberRegist
 	sm.SubscriberToQueueMap[request.SubscriberID] = request.QueueName
 	sm.QueueToSubscriberListMap[request.QueueName] = append(sm.QueueToSubscriberListMap[request.QueueName], sm.SubscriberMap[request.SubscriberID])
 
-	sm.TransactionLockManager.ReleaseLock([]string{"SubscriberToQueueMap", "SubscriberMap", "QueueToSubscriberListMap"})
+	sm.TransactionLockManager.ReleaseLock([]string{"SubscriberManager"})
 	return nil
 }
 
 func (sm *SubscriberManager) GetQueueSubscribers(queueName string) []*domain.Subscriber {
-	// TODO : using locks on QueueToSubscriberListMap to ensure concurrent operations can be carried out
-	sm.TransactionLockManager.AcquireLock([]string{"QueueToSubscriberListMap"})
+	// TODO_Done_Modified : using locks on QueueToSubscriberListMap to ensure concurrent operations can be carried out
+	// locks on SubscriberManager rather than QueueToSubscriberListMap, due to deadlock problem
+	sm.TransactionLockManager.AcquireLock([]string{"SubscriberManager"})
 	subsribers := sm.QueueToSubscriberListMap[queueName]
 	logger.Logger.Debug().Msgf("subscribers for queue %s : %+v", queueName, subsribers)
-	sm.TransactionLockManager.ReleaseLock([]string{"QueueToSubscriberListMap"})
+	sm.TransactionLockManager.ReleaseLock([]string{"SubscriberManager"})
 	return subsribers
 }
 
 func (sm *SubscriberManager) GetSubscriberQueueName(subscriberID string) string {
-	// TODO : using locks on SubscriberToQueueMap to ensure concurrent operations can be carried out
-	sm.TransactionLockManager.AcquireLock([]string{"SubscriberToQueueMap"})
+	// TODO_Done_Modified : using locks on SubscriberToQueueMap to ensure concurrent operations can be carried out
+	// locks on SubscriberManager rather than SubscriberToQueueMap, due to deadlock problem
+	sm.TransactionLockManager.AcquireLock([]string{"SubscriberManager"})
 	queueName := sm.SubscriberToQueueMap[subscriberID]
-	sm.TransactionLockManager.ReleaseLock([]string{"SubscriberToQueueMap"})
+	sm.TransactionLockManager.ReleaseLock([]string{"SubscriberManager"})
 	return queueName
 }
